@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>甘特图的制作</title>
+    <link rel="stylesheet" href="app/lib/bootstrap/dist/css/bootstrap.min.css">
+    <script src="app/lib/jquery/dist/jquery.min.js"></script>
+    <script src="app/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="app/lib/highcharts/highcharts.src.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        // Define tasks
+        var tasks = [{
+            name: '小任务1',
+            intervals: [{ // From-To pairs
+                from: Date.UTC(2016, 5, 16, 0,0,0),
+                to: Date.UTC(2016, 5, 16, 6,0,0),
+                label:'开始阶段'
+
+            }, {
+                from: Date.UTC(2016, 5, 16, 12,0,0),
+                to: Date.UTC(2016, 5, 16, 16,0,0),
+                label:'进攻阶段'
+            }]
+        }, {
+            name: '小任务2',
+            intervals: [{ // From-To pairs
+                from: Date.UTC(2016, 5, 16, 6),
+                to: Date.UTC(2016, 5, 16, 8)
+            }, {
+                from: Date.UTC(2016, 5, 16, 16),
+                to: Date.UTC(2016, 5, 16, 22)
+            }]
+        }, {
+            name: '小任务3',
+            intervals: [{ // From-To pairs
+                from: Date.UTC(2016, 5, 16, 7),
+                to: Date.UTC(2016, 5, 16, 8),
+                label: 'Breakfast'
+            }, {
+                from: Date.UTC(2016, 5, 16, 16),
+                to: Date.UTC(2016, 5, 16, 17),
+                label: 'Dinner'
+            }]
+        }, {
+            name: '小任务4',
+            intervals: [{ // From-To pairs
+                from: Date.UTC(2016, 5, 16, 8),
+                to: Date.UTC(2016, 5, 16, 16)
+            }]
+        }];
+
+        // Define milestones
+        var milestones = [{
+            name: 'Get to bed',
+            time: Date.UTC(2016, 5, 16, 22),
+            task: 1,
+            marker: {
+                symbol: 'triangle',
+                lineWidth: 1,
+                lineColor: 'black',
+                radius: 8
+            }
+        }];
+
+        // re-structure the tasks into line seriesvar series = [];
+        var series = [];
+        $.each(tasks.reverse(), function (i, task) {
+            var item = {
+                name: task.name,
+                data: []
+            };
+            $.each(task.intervals, function (j, interval) {
+                item.data.push({
+                    x: interval.from,
+                    y: i,
+                    label: interval.label,
+                    from: interval.from,
+                    to: interval.to
+                }, {
+                    x: interval.to,
+                    y: i,
+                    from: interval.from,
+                    to: interval.to
+                });
+
+                // add a null value between intervals
+                if (task.intervals[j + 1]) {
+                    item.data.push(
+                            [(interval.to + task.intervals[j + 1].from) / 2, null]
+                    );
+                }
+
+            });
+
+            series.push(item);
+        });
+
+        // restructure the milestones
+        $.each(milestones, function (i, milestone) {
+            var item = Highcharts.extend(milestone, {
+                data: [[
+                    milestone.time,
+                    milestone.task
+                ]],
+                type: 'scatter'
+            });
+            series.push(item);
+        });
+        $(function () {
+            $('#container').highcharts({
+                title: {
+                    style: { fontSize: '16px', fontWeight: 'bold', textTransform: 'uppercase' },
+                    text: 'Daily activities'
+                },
+
+                xAxis: {
+                    type: 'datetime',
+                    opposite:true,
+                    labels:{
+                        style:{
+                            color:"#000",
+                            font:'bold 11px "Trbuchet MS",Verdana,sans-serif'
+                        }
+                    },
+                    title:{
+                        style:{
+                            color:'#333',
+                            fontWeight:'bold',
+                            fontSize:'12px'
+                        }
+                    }
+                },
+
+                yAxis: {
+                    tickInterval: 1,
+                    labels: {
+                        style:{
+                            color:'#000',
+                            font:'bold 11px "Trbuchet MS",Verdana,sans-serif'
+                        },
+                        formatter: function () {
+                            if (tasks[this.value]) {
+                                return tasks[this.value].name;
+                            }
+                        }
+                    },
+                    gridLineWidth:1,
+                    lineColor:'#FF00',
+                    lineWidth:1,
+                    tickWidth:1,
+                    tickColor:'#000',
+                    startOnTick: false,
+                    endOnTick: false,
+                    title: {
+                        text: ''
+                    },
+                    minPadding: 0.2,
+                    maxPadding: 0.2
+                },
+
+                legend: {
+                    enabled: false
+                },
+
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + tasks[this.y].name + '</b><br/>' +
+                                Highcharts.dateFormat('%H:%M', this.point.options.from) +
+                                ' - ' + Highcharts.dateFormat('%H:%M', this.point.options.to);
+                    }
+                },
+
+                plotOptions: {
+                    line: {
+                        lineWidth: 15,
+                        marker: {
+                            enabled: false
+                        },
+                        dataLabels: {
+                            enabled: true,
+                            align: 'left',
+                            formatter: function () {
+                                return this.point.options && this.point.options.label;
+                            }
+                        }
+                    }
+                },
+
+                series: series,
+                background2: '#F0F0EA'
+            });
+        });
+
+        // create the chart
+
+    </script>
+</head>
+<body>
+<div class="container mycss" style="border: 1px solid red;>
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <label for="ty" class="control-label">我饿:</label>
+                <input id="ty" type="text" class="form-control">
+            </div>
+
+        </div>
+        <div class="col-sm-10">
+            <div id="container" style="min-width:400px;height:500px;"></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

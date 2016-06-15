@@ -1,0 +1,23 @@
+{
+  "name": "highchartgant",
+  "version": "1.0.0",
+  "description": "highchart gant",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhuhuijun/highchart_gant.git"
+  },
+  "keywords": [
+    "gant",
+    "highchart"
+  ],
+  "author": "zhuhj",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zhuhuijun/highchart_gant/issues"
+  },
+  "homepage": "https://github.com/zhuhuijun/highchart_gant#readme"
+}
